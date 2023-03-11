@@ -233,7 +233,7 @@ This will replace the CSS selectors in your files with minified selectors.
 
 By default, the package will back up your files before replacing the selectors. You can disable this by passing backup=False to the Replace_CSS_Selectors_With_Minifed method.
 
-* Note
+# Note
 
 You can use glob for paths to files
 
