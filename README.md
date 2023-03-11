@@ -232,3 +232,25 @@ src folder after running Minify_CSS_Names with default backup arg in m.Replace_C
 This will replace the CSS selectors in your files with minified selectors.
 
 By default, the package will back up your files before replacing the selectors. You can disable this by passing backup=False to the Replace_CSS_Selectors_With_Minifed method.
+
+* Note
+
+You can use glob for paths to files
+
+```python
+from css_selector_minifier import Minify_CSS_Names
+import glob
+
+m = Minify_CSS_Names(
+  css=glob.glob('src/*.css'),
+  html=glob.glob('src/*.html'),
+  js=glob.glob('src/*.js'),
+  start_prefix='-s-',
+  end_prefix='-e-',
+  min_letters=2
+)
+
+m.Get_All_CSS_Selectors()
+m.Generate_Map_For_CSS_Selectors()
+m.Replace_CSS_Selectors_With_Minifed()
+```
