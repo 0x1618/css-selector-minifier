@@ -42,7 +42,7 @@ class Minify_CSS_Names():
 		regex_pattern (str): Regular expression pattern to match CSS selectors.
 
 	Methods:
-		Get_All_CSS_Selectors(self) -> set:
+		Get_All_CSS_Selectors(self, only_css_files=False) -> set:
 			Returns a set of unique CSS selectors found in `css` files.
 
 		Generate_Minifed_Selectors(self) -> generator:
@@ -54,6 +54,9 @@ class Minify_CSS_Names():
 		Replace_CSS_Selectors_With_Minifed(self, backup=True) -> None:
 			Replaces all CSS selectors in `css`, `html` and `js` files with their minified counterparts.
 			If `backup` is True, creates a backup of the original files before making changes.
+
+		Minify(self, only_css_files=False, backup=True) -> None:
+			Perfoms minification using above functions.
 	"""
 
 	def __init__(self, css=None, html=None, js=None, start_prefix='-s-', end_prefix='-e-', min_letters=1):
@@ -75,15 +78,19 @@ class Minify_CSS_Names():
 		if self.min_letters <= 0:
 			raise ValueError("min_letters cannot be equal to 0 or less than 0")
 
-	def Get_All_CSS_Selectors(self) -> set:
+	def Get_All_CSS_Selectors(self, only_css_files=False) -> set:
 		"""
-		Returns a set of unique CSS selectors found in `css` files.
+		Returns a set of unique CSS selectors found in `css` files or found in `css` `js` `html` if only_css_files equals to True.
 
+		Args:
+			only_css_files (bool, optional): Look only for defined css selectors in css files. Defaults to False.
 		Returns:
 			set: Set of unique CSS selectors.
 		"""
 
-		for path in self.css:
+		paths = self.css if only_css_files else self.css + self.html + self.js
+
+		for path in paths:
 			with open(path, 'rb') as css_file:
 				css = css_file.read().decode()
 				for selector in re.findall(self.regex_pattern, css, re.MULTILINE):
@@ -96,7 +103,7 @@ class Minify_CSS_Names():
 
 		return self.css_selectors
 
-	def Generate_Minifed_Selectors(self) -> 'Generator object from itertools.chain.from_iterable':
+	def Generate_Minifed_Selectors(self) -> chain.from_iterable:
 		"""
 		Returns a generator object which yields a series of minified selectors.
 
@@ -154,9 +161,23 @@ class Minify_CSS_Names():
 
 				file.truncate(0)
 				file.write(new_css.encode())
+	
+	def Minify(self, only_css_files=False, backup=True) -> None:
+		"""
+		Perform minification.
+
+		Args:
+			backup (bool, optional): Whether to create a backup of the original files before making changes. Defaults to True.
+			only_css_files (bool, optional): Look only for defined css selectors in css files. Defaults to False.
+		Returns:
+			None
+		"""
+
+		self.Get_All_CSS_Selectors(only_css_files=only_css_files)
+		self.Generate_Map_For_CSS_Selectors()
+		self.Replace_CSS_Selectors_With_Minifed(backup=backup)
 
 if __name__ == "__main__":
-	import glob
 	m = Minify_CSS_Names(
 		css=['src/style.css'],
 		html=['src/index.html'],
@@ -166,6 +187,4 @@ if __name__ == "__main__":
 		min_letters=2
 	)
 
-	m.Get_All_CSS_Selectors()
-	m.Generate_Map_For_CSS_Selectors()
-	m.Replace_CSS_Selectors_With_Minifed()
+	m.Minify()
