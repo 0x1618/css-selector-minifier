@@ -4,7 +4,7 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-VERSION = '1.2'
+VERSION = '1.2.1'
 DESCRIPTION = 'Minify css selectors in css, html, js files.'
 LONG_DESCRIPTION = 'A package that allows you to easily minify css selectors in css, html, js files.'
 
