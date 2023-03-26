@@ -80,7 +80,7 @@ class Minify_CSS_Names():
 
 	def Get_All_CSS_Selectors(self, only_css_files=False) -> set:
 		"""
-		Returns a set of unique CSS selectors found in `css` files or found in `css` `js` `html` if only_css_files equals to True.
+		Returns a set of unique CSS selectors found in `css` files or found in `css` `html` if only_css_files equals to True.
 
 		Args:
 			only_css_files (bool, optional): Look only for defined css selectors in css files. Defaults to False.
@@ -88,7 +88,7 @@ class Minify_CSS_Names():
 			set: Set of unique CSS selectors.
 		"""
 
-		paths = self.css if only_css_files else self.css + self.html + self.js
+		paths = self.css if only_css_files else self.css + self.html
 
 		for path in paths:
 			with open(path, 'rb') as css_file:
