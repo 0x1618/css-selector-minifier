@@ -85,11 +85,11 @@ CSS that **will work**
 - `min_letters`: an integer representing the minimum length of the minified class or id name (default: 1).
 
 ## CSS-Selector-Minifier methods
-- `Get_All_CSS_Selectors(only_css_files=False)`: returns a set of all CSS selectors in the specified CSS files. If only_css_files is set to True, Get_All_CSS_Selectors look only for defined css selectors in css files.
+- `Get_All_CSS_Selectors()`: returns a set of all CSS selectors in the specified CSS files.
 - `Generate_Minifed_Selectors()`: returns a generator object containing smart generated minified CSS selectors.
 - `Generate_Map_For_CSS_Selectors()`: returns a dictionary mapping original CSS selectors to their minified counterparts.
 - `Replace_CSS_Selectors_With_Minifed(backup=True)`: replaces all CSS selectors in the specified CSS, HTML, and JavaScript files with their minified counterparts. If backup is set to True, a backup copy of each file will be created with a .bak extension.
-- `Minify(only_css_files=False, backup=True)`: perform minification. If backup is set to True, a backup copy of each file will be created with a .bak extension. If only_css_files is set to True, Get_All_CSS_Selectors look only for defined css selectors in css files.
+- `Minify(backup=True)`: perform minification. If backup is set to True, a backup copy of each file will be created with a .bak extension.
 
 # Example
 Before CSS-Selector-Minifier
