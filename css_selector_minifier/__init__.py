@@ -27,6 +27,8 @@ class Minify_CSS_Names():
 		start_prefix (str): Prefix added at the start of the selector to be minified.
 		end_prefix (str): Prefix added at the end of the selector to be minified.
 		min_letters (int): Minimum number of letters in the minified selector.
+		start_selector (str): Unique prefix that you want to put at the start of the minifed selector.
+		end_selector (str): Unique prefix that you want to put at the end of the minifed selector.
 
 	Raises:
 		ValueError: If `min_letters` is zero or negative.
@@ -40,6 +42,8 @@ class Minify_CSS_Names():
 		js (list): List of JS file paths to be checked for CSS selectors to be minified.
 		min_letters (int): Minimum number of letters in the minified selector.
 		regex_pattern (str): Regular expression pattern to match CSS selectors.
+		start_selector (str): Unique prefix that you want to put at the start of the minifed selector.
+		end_selector (str): Unique prefix that you want to put at the end of the minifed selector.
 
 	Methods:
 		Get_All_CSS_Selectors(self) -> set:
@@ -59,7 +63,7 @@ class Minify_CSS_Names():
 			Perfoms minification using above functions.
 	"""
 
-	def __init__(self, css=None, html=None, js=None, start_prefix='-s-', end_prefix='-e-', min_letters=1):
+	def __init__(self, css=None, html=None, js=None, start_prefix='-s-', end_prefix='-e-', min_letters=1, start_selector='', end_selector=''):
 		self.prefix = {
 			'start-prefix': start_prefix,
 			'end-prefix': end_prefix
@@ -72,8 +76,10 @@ class Minify_CSS_Names():
 		self.js = js if js else []
 
 		self.min_letters = min_letters
+		self.start_selector = start_selector
+		self.end_selector = end_selector
 
-		self.regex_pattern = rf'^.*[.#]{self.prefix["start-prefix"]}.*{self.prefix["end-prefix"]}'
+		self.regex_pattern = rf'([.#])({self.prefix["start-prefix"]}[a-zA-Z0-9_-]+{self.prefix["end-prefix"]})'
 
 		if self.min_letters <= 0:
 			raise ValueError("min_letters cannot be equal to 0 or less than 0")
@@ -92,6 +98,7 @@ class Minify_CSS_Names():
 			with open(path, 'rb') as css_file:
 				css = css_file.read().decode()
 				for selector in re.findall(self.regex_pattern, css, re.MULTILINE):
+					selector = ''.join(selector)
 					selectors = filter(lambda selector: selector != '', selector.replace(',', '').split(' '))
 					for selector in selectors:
 						selector = selector.replace('\t', '')
@@ -126,7 +133,7 @@ class Minify_CSS_Names():
 
 		generator = self.Generate_Minifed_Selectors()
 		for selector in self.css_selectors:
-			self.name_map[selector] = selector[0] + ''.join(next(generator))
+			self.name_map[selector] = selector[0] + self.start_selector + ''.join(next(generator)) + self.end_selector
 
 		return self.name_map
 
@@ -142,9 +149,9 @@ class Minify_CSS_Names():
 		"""
 
 		for path in self.css + self.html + self.js:
-			with open(path, 'ab+') as file:
+			with open(path, 'a+', encoding='utf-8') as file:
 				file.seek(0)
-				new_css = file.read().decode()
+				new_css = file.read()
 
 				for old_selector, new_selector in self.name_map.items():
 					if path.split('.')[-1] in ['html', 'js']:
@@ -158,7 +165,7 @@ class Minify_CSS_Names():
 					copyfile(path, path + f'-{time()}.bak')
 
 				file.truncate(0)
-				file.write(new_css.encode())
+				file.write(new_css)
 	
 	def Minify(self, backup=True) -> None:
 		"""
@@ -175,13 +182,16 @@ class Minify_CSS_Names():
 		self.Replace_CSS_Selectors_With_Minifed(backup=backup)
 
 if __name__ == "__main__":
+	import glob
 	m = Minify_CSS_Names(
-		css=['src/style.css'],
-		html=['src/index.html'],
-		js=['src/main.js'],
+		css=['main.css'],
+		html=[],
+		js=[],
 		start_prefix='-s-',
 		end_prefix='-e-',
-		min_letters=2
+		min_letters=2,
+		start_selector='l',
+		end_selector='s'
 	)
 
 	m.Minify()
